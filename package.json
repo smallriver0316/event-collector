@@ -21,7 +21,6 @@
   },
   "homepage": "https://github.com/smallriver0316/event-collector#readme",
   "dependencies": {
-    "moment": "^2.29.1",
-    "querystring": "^0.2.0"
+    "moment": "^2.29.1"
   }
 }

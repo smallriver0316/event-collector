@@ -1,12 +1,11 @@
 'use strict';
 const https = require('https');
-// const queryString = require('querystring');
 const moment = require('moment');
 
 module.exports.compassCollector = async (event, context, callback) => {
   console.log('Start compassCollector handler');
   const currentMonth = moment().format('YYYYMM');
-  const url = `https://connpass.com/api/v1/event/?ym=${currentMonth}&order=2&count=10`;
+  const url = `https://connpass.com/api/v1/event/?ym=${currentMonth}`;
   const options = {
     headers: {
       'User-Agent': 'Node/12.x'
@@ -14,10 +13,15 @@ module.exports.compassCollector = async (event, context, callback) => {
   };
 
   await requestCompassData(url, options).then(res => {
-    callback(null, {
-      statusCode: 200,
-      body: res
-    });
+    try {
+      const data = JSON.parse(res);
+      callback(null, {
+        statusCode: 200,
+        body: JSON.stringify(data.events)
+      });
+    } catch(e) {
+      throw new Error(e);
+    };
   }).catch(err => {
     callback(Error(err));
   });
