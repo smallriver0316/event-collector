@@ -22,5 +22,8 @@
   "homepage": "https://github.com/smallriver0316/event-collector#readme",
   "dependencies": {
     "moment": "^2.29.1"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.834.0"
   }
 }

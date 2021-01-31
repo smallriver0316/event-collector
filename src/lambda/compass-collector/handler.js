@@ -1,6 +1,10 @@
 'use strict';
 const https = require('https');
 const moment = require('moment');
+var AWS = require('aws-sdk');
+var kinesis = new AWS.Kinesis({apiVersion: '2013-12-02'});
+
+var KinesisStream = require('../../aws/kinesis-stream');
 
 module.exports.compassCollector = async (event, context, callback) => {
   console.log('Start compassCollector handler');
@@ -12,19 +16,20 @@ module.exports.compassCollector = async (event, context, callback) => {
     }
   };
 
-  await requestCompassData(url, options).then(res => {
-    try {
-      const data = JSON.parse(res);
-      callback(null, {
-        statusCode: 200,
-        body: JSON.stringify(data.events)
-      });
-    } catch(e) {
-      throw new Error(e);
-    };
-  }).catch(err => {
-    callback(Error(err));
-  });
+  try {
+    const compassRes = await requestCompassData(url, options);
+    const compassData = JSON.parse(compassRes);
+
+    const kinesisStream = new KinesisStream(kinesis);
+    const kinesisRes = await kinesisStream.putRecords(compassData.events);
+
+    callback(null, {
+      statusCode: 200,
+      body: JSON.stringify(kinesisRes)
+    });
+  } catch(err) {
+    callback(new Error(err))
+  }
 };
 
 const requestCompassData = async (url, options) => {

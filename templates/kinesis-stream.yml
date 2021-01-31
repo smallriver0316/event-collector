@@ -1,0 +1,15 @@
+# AWSTemplateFormatVersion: "2010-09-09"
+# Description: Aurora Serverless template
+Resources:
+  EventCollectorKinesisStream:
+    Type: "AWS::Kinesis::Stream"
+    Properties:
+      Name: "EventCollectorKinesisStream"
+      ShardCount: 1
+      StreamEncryption:
+        EncryptionType: "KMS"
+        KeyId: alias/aws/kinesis
+      Tags:
+        -
+          Key: "AppName"
+          Value: "event-collector"

@@ -11,3 +11,9 @@ npm install
 ```bash
 npx serverless deploy -v
 ```
+
+## How to remove deployed services
+
+```bash
+npx serverless remove
+```

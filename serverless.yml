@@ -13,7 +13,7 @@
 
 service: event-collector
 # app and org for use with dashboard.serverless.com
-#app: your-app-name
+app: event-collector
 #org: your-org-name
 
 # You can pin your service to only deploy with a specific Serverless version
@@ -28,6 +28,9 @@ provider:
 # you can overwrite defaults here
   stage: dev
   region: ap-northeast-1
+
+  custom:
+    kinesisName: EventCollectorKinesisStream
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -65,6 +68,10 @@ package:
 functions:
   compassCollector:
     handler: src/lambda/compass-collector/handler.compassCollector
+    role: CompassCollectorLambdaRole
+    description: "function to collect event data with Compass API"
+    environment:
+      KINESIS_STREAM_NAME: ${self:provider.custom.kinesisName}
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
@@ -106,9 +113,33 @@ functions:
 #      variable2: value2
   doorkeeperCollector:
     handler: src/lambda/doorkeeper-collector/handler.doorkeeperCollector
+    description: "function to collect event data with Doorkeeper API"
+
+  eventPusher:
+    handler: src/lambda/event-pusher/handler.eventPusher
+    role: EventPusherLambdaRole
+    description: "function to push event data to RDS triggered by Kinesis Data Streams"
+    events:
+      - stream:
+        type: kinesis
+        arn:
+          Fn::Join:
+            - ':'
+            - - arn
+              - aws
+              - kinesis
+              - Ref: AWS::Region
+              - Ref: AWS::AccountId
+              - stream/EventCollectorKinesisStream
+        consumer: true
+        batchSize: 100
+        startingPosition: LATEST
+        enabled: true
 
 # you can add CloudFormation resource templates here
-#resources:
+resources:
+  - ${file(./templates/iam-role.yml)}
+  - ${file(./templates/kinesis-stream.yml)}
 #  Resources:
 #    NewResource:
 #      Type: AWS::S3::Bucket
