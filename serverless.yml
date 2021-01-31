@@ -63,7 +63,7 @@ package:
    - package.json
    - package-lock.json
    - templates/**
-   - http_test.js
+   - scripts/**
 
 functions:
   compassCollector:
@@ -114,6 +114,8 @@ functions:
   doorkeeperCollector:
     handler: src/lambda/doorkeeper-collector/handler.doorkeeperCollector
     description: "function to collect event data with Doorkeeper API"
+    environment:
+      DOORKEEPER_API_TOKEN: ""
 
   eventPusher:
     handler: src/lambda/event-pusher/handler.eventPusher

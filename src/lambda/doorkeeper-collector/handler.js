@@ -1,18 +1,23 @@
 'use strict';
+const callExternalEventApi = require('../request-event');
 
-module.exports.doorkeeperCollector = async (event) => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(
-      {
-        message: 'Go Serverless v1.0! DoorkeeperCollector executed successfully!',
-        input: event,
-      },
-      null,
-      2
-    ),
+module.exports.doorkeeperCollector = async (event, context, callback) => {
+  console.log('Start doorkeeperCollector handler');
+  const url = 'https://api.doorkeeper.jp/events/28319';
+  const options = {
+    headers: {
+      'User-Agent': 'Node/12.x',
+      'Authorization': `Bearer ${process.env.DOORKEEPER_API_TOKEN}`
+    }
   };
 
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
+  try {
+    const dkRes = await callExternalEventApi(url, options);
+    callback(null, {
+      statusCode: 200,
+      body: JSON.stringify(dkRes)
+    });
+  } catch(err) {
+    callback(new Error(err));
+  }
 };
