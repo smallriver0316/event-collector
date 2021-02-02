@@ -1,5 +1,8 @@
 # event-collector
 
+Database and functions to collect events' information
+(Now it's under development...)
+
 ## How to setup
 
 ```bash
