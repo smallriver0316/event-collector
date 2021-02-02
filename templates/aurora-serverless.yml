@@ -1,0 +1,124 @@
+# AWSTemplateFormatVersion: "2010-09-09"
+# Description: Aurora Serverless template
+Resources:
+  EventCollectorVPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: "default"
+      Tags:
+        - Key: "AppName"
+          Value: "event-collector"
+
+  EventCollectorSubnet1:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: !Ref AWS::Region
+      CidrBlock: 10.0.0.0/17
+      VpcId: !Ref EventCollectorVPC
+      Tags:
+        - Key: "AppName"
+          Value: "event-collector"
+
+  EventCollectorSubnet2:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: !Ref AWS::Region
+      CidrBlock: 10.0.128.0/17
+      VpcId: !Ref EventCollectorVPC
+      Tags:
+        - Key: "AppName"
+          Value: "event-collector"
+
+  EventCollectorDBSubnetGroup:
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties:
+      DBSubnetGroupDescription: "Subnet group for EventCollector Aurora Serverless"
+      SubnetIds:
+        - !Ref EventCollectorSubnet1
+        - !Ref EventCollectorSubnet2
+      Tags:
+        - Key: "AppName"
+          Value: "event-collector"
+
+  # EventCollectorSecurityGroup:
+  #   Type: "AWS::EC2::SecurityGroup"
+  #   Properties:
+  #     GroupDescription: "VPC Security Group for EventCollector Aurora Serverless"
+  #     GroupName: "EventCollectorSecurityGroup"
+  #     VpcId: !Ref EventCollectorVPC
+  #     Tags:
+  #       - Key: "AppName"
+  #         Value: "event-collector"
+
+  EventCollectorSecretsManagerVPCEndpoint:
+    Type: "AWS::EC2::VPCEndpoint"
+    Properties:
+      SubnetIds:
+        - !Ref EventCollectorSubnet1
+        - !Ref EventCollectorSubnet2
+      SecurityGroupIds:
+        - !GetAtt EventCollectorVPC.DefaultSecurityGroup
+      VpcEndpointType: "Interface"
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.secretsmanager"
+      PrivateDnsEnabled: true
+      VpcId: !Ref EventCollectorVPC
+
+  EventCollectorSecret:
+    Type: "AWS::SecretsManager::Secret"
+    Properties:
+      Description: "SecretsManager for EventCollector Aurora Serverless"
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "clusteradmin"}'
+        GenerateStringKey: "password"
+        PasswordLength: 16
+        ExcludeCharacters: '"@/\'
+      Tags:
+        - Key: "AppName"
+          Value: "event-collector"
+
+  EventCollectorDB:
+    Type: "AWS::RDS::DBCluster"
+    Properties:
+      # DatabaseName: "EventCollectorDB"
+      # DBClusterIdentifier: "event-collector-cluster"
+      AvailabilityZones:
+        - Fn::Select:
+          - 0
+          - Fn::GetAZs: !Ref AWS::Region
+        - Fn::Select:
+          - 1
+          - Fn::GetAZs: !Ref AWS::Region
+      DBSubnetGroupName: !Ref EventCollectorDBSubnetGroup
+      Engine: "aurora-postgresql"
+      EngineMode: "serverless"
+      EngineVersion: "10.7"
+      MasterUsername: !Sub '{{resolve:secretsmanager:${EventCollectorSecret}::username}}'
+      MasterUserPassword: !Sub '{{resolve:secretsmanager:${EventCollectorSecret}::password}}'
+      Port: 5432
+      ScalingConfiguration:
+        AutoPause: true
+        MaxCapacity: 4
+        MinCapacity: 2
+        SecondsUntilAutoPause: 1000
+      StorageEncrypted: true
+      VpcSecurityGroupIds:
+        - !GetAtt EventCollectorVPC.DefaultSecurityGroup
+      Tags:
+        - Key: "AppName"
+          Value: "event-collector"
+
+  EventCollectorSecretAttachment:
+    Type: "AWS::SecretsManager::SecretTargetAttachment"
+    Properties:
+      SecretId: !Ref EventCollectorSecret
+      TargetId: !Ref EventCollectorDB
+      TargetType: "AWS::RDS::DBCluster"
