@@ -1,5 +1,5 @@
 # AWSTemplateFormatVersion: "2010-09-09"
-# Description: Aurora Serverless template
+# Description: IAM ROLE template
 Resources:
   CompassCollectorLambdaRole:
     Type: AWS::IAM::Role
@@ -70,6 +70,19 @@ Resources:
                       - Ref: AWS::Region
                       - Ref: AWS::AccountId
                       - "stream/EventCollectorKinesisStream"
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource:
+                  - "Fn::Join":
+                    - ":"
+                    -
+                      - "arn:aws:secretsmanager"
+                      - Ref: AWS::Region
+                      - Ref: AWS::AccountId
+                      - "secret"
+                      - "event-collector-secret*"
+
       Tags:
         -
           Key: "AppName"

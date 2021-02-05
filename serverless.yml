@@ -125,11 +125,12 @@ functions:
     description: "function to push event data to RDS triggered by Kinesis Data Streams"
     events:
       - stream:
-          arn: arn:aws:kinesis:#{AWS::Region}:#{AWS::AccountId}:stream/EventCollectorKinesisStream
-          consumer: true
+          arn: arn:aws:kinesis:#{AWS::Region}:#{AWS::AccountId}:stream/${self:custom.kinesisName}
           batchSize: 100
           startingPosition: LATEST
           enabled: true
+    environment:
+      SECRETS_MANAGER_NAME: event-collector-secret-${self:provider.stage}
 
 # you can add CloudFormation resource templates here
 resources:

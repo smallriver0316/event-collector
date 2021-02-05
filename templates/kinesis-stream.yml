@@ -1,5 +1,5 @@
 # AWSTemplateFormatVersion: "2010-09-09"
-# Description: Aurora Serverless template
+# Description: Kinesis Stream template
 Resources:
   EventCollectorKinesisStream:
     Type: "AWS::Kinesis::Stream"

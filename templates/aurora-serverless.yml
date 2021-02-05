@@ -75,6 +75,7 @@ Resources:
   EventCollectorSecret:
     Type: "AWS::SecretsManager::Secret"
     Properties:
+      Name: event-collector-secret-${self:provider.stage}
       Description: "SecretsManager for EventCollector Aurora Serverless"
       GenerateSecretString:
         SecretStringTemplate: '{"username": "clusteradmin"}'
@@ -98,6 +99,7 @@ Resources:
           - 1
           - Fn::GetAZs: !Ref AWS::Region
       DBSubnetGroupName: !Ref EventCollectorDBSubnetGroup
+      EnableHttpEndpoint: true
       Engine: "aurora-postgresql"
       EngineMode: "serverless"
       EngineVersion: "10.7"
