@@ -19,9 +19,28 @@ module.exports.compassCollector = async (event, context, callback) => {
   try {
     const compassRes = await callExternalEventApi(url, options);
     const compassData = JSON.parse(compassRes);
+    const events = compassData.events.map(event => {
+      return {
+        id: 'compass' + event.event_id,
+        origin: 'compass',
+        event_id: event.event_id,
+        title: event.title,
+        description: event.description,
+        event_url: event.event_url,
+        start_time: event.started_at,
+        end_time: event.ended_at,
+        accepted: event.accepted,
+        waiting: event.waiting,
+        updated_at: event.updated_at,
+        place: event.place,
+        address: event.address,
+        lat: event.lat,
+        lon: event.lon
+      };
+    });
 
     const kinesisStream = new KinesisStream(kinesisClient);
-    const kinesisRes = await kinesisStream.putRecords(compassData.events);
+    const kinesisRes = await kinesisStream.putRecords(events);
 
     callback(null, {
       statusCode: 200,

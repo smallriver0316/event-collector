@@ -89,8 +89,8 @@ Resources:
   EventCollectorDB:
     Type: "AWS::RDS::DBCluster"
     Properties:
-      # DatabaseName: "EventCollectorDB"
-      # DBClusterIdentifier: "event-collector-cluster"
+      # DatabaseName: "event-collector-db"
+      # DBClusterIdentifier: "event-collector-dbcluster"
       AvailabilityZones:
         - Fn::Select:
           - 0

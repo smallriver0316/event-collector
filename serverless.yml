@@ -131,6 +131,8 @@ functions:
           enabled: true
     environment:
       SECRETS_MANAGER_NAME: event-collector-secret-${self:provider.stage}
+      DB_NAME: "event_collector_db"
+      TABLE_NAME: "event_table"
 
 # you can add CloudFormation resource templates here
 resources:
