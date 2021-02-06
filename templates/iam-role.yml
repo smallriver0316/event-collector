@@ -82,7 +82,22 @@ Resources:
                       - Ref: AWS::AccountId
                       - "secret"
                       - "event-collector-secret*"
-
+              - Effect: Allow
+                Action:
+                  - rds-data:BatchExecuteStatement
+                  - rds-data:BeginTransaction
+                  - rds-data:CommitTransaction
+                  - rds-data:ExecuteStatement
+                  - rds-data:RollbackTransaction
+                Resource:
+                  - "Fn::Join":
+                    - ":"
+                    -
+                      - "arn:aws:rds"
+                      - Ref: AWS::Region
+                      - Ref: AWS::AccountId
+                      - "cluster"
+                      - "event-collector*"
       Tags:
         -
           Key: "AppName"

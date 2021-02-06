@@ -78,7 +78,7 @@ Resources:
       Name: event-collector-secret-${self:provider.stage}
       Description: "SecretsManager for EventCollector Aurora Serverless"
       GenerateSecretString:
-        SecretStringTemplate: '{"username": "clusteradmin"}'
+        SecretStringTemplate: '{"username": "postgres"}'
         GenerateStringKey: "password"
         PasswordLength: 16
         ExcludeCharacters: '"@/\'
