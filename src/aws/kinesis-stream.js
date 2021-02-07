@@ -17,7 +17,7 @@ module.exports = class KinesisStream {
     return new Promise((resolve, reject) => {
       this.client.putRecord(params, (err, data) => {
         if (err) {
-          console.error('Failed to kinesis.putRecord');
+          console.error('[ERROR] Failed to kinesis.putRecord');
           reject(err);
         } else {
           resolve(data);
@@ -48,7 +48,7 @@ module.exports = class KinesisStream {
     return new Promise((resolve, reject) => {
       this.client.putRecords(params, (err, data) => {
         if (err) {
-          console.error('Failed to kinesis.putRecords');
+          console.error('[ERROR] Failed to kinesis.putRecords');
           reject(err);
         } else {
           resolve(data);

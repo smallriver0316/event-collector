@@ -13,7 +13,7 @@ module.exports = class SecretsManager {
     return new Promise((resolve, reject) => {
       this.client.getSecretValue(params, (err, data) => {
         if (err) {
-          console.error("Failed to SecretsManager.getSecretValue");
+          console.error("[ERROR] Failed to SecretsManager.getSecretValue");
           reject(err);
         } else {
           resolve(data);

@@ -29,6 +29,7 @@ module.exports.compassCollector = async (event, context, callback) => {
         event_url: event.event_url,
         start_time: event.started_at,
         end_time: event.ended_at,
+        ticket_limit: event.limit,
         accepted: event.accepted,
         waiting: event.waiting,
         updated_at: event.updated_at,

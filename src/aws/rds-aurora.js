@@ -17,7 +17,7 @@ module.exports = class RdsDataService {
     return new Promise((resolve, reject) => {
       this.client.beginTransaction(params, (err, data) => {
         if (err) {
-          console.error('Failed to RdsDataService.beginTransaction');
+          console.error('[ERROR] Failed to RdsDataService.beginTransaction');
           reject(err);
         } else {
           resolve(data);
@@ -38,7 +38,7 @@ module.exports = class RdsDataService {
     return new Promise((resolve, reject) => {
       this.client.commitTransaction(params, (err, data) => {
         if (err) {
-          console.error('Failed to RdsDataService.commitTransaction');
+          console.error('[ERROR] Failed to RdsDataService.commitTransaction');
           reject(err);
         } else {
           resolve(data);
@@ -53,14 +53,14 @@ module.exports = class RdsDataService {
     const params = {
       resourceArn,
       secretArn,
-      sql: 'select * from event_table',
-      database: 'event_collector_db'
+      sql: `select * from ${process.env.TABLE_NAME}`,
+      database: process.env.DB_NAME
     };
 
     return new Promise((resolve, reject) => {
       this.client.executeStatement(params, (err, data) => {
         if (err) {
-          console.error('Failed to RdsDataService.executeSelectAll');
+          console.error('[ERROR] Failed to RdsDataService.executeSelectAll');
           reject(err);
         } else {
           resolve(data);
@@ -68,4 +68,33 @@ module.exports = class RdsDataService {
       });
     });
   };
+
+  insertEvents = async (resourceArn, secretArn, sqlStr, parameterSets, transactionId) => {
+    console.log('Start RdsDataService.insertEvents');
+
+    var params = {
+      resourceArn,
+      secretArn,
+      sql: sqlStr,
+      database: process.env.DB_NAME,
+      parameterSets
+    };
+    if (transactionId) {
+      params = {
+        ...params,
+        transactionId
+      };
+    }
+
+    return new Promise((resolve, reject) => {
+      this.client.batchExecuteStatement(params, (err, data) => {
+        if (err) {
+          console.error('[ERROR] Failed to RdsDataService.insertEvents');
+          reject(err);
+        } else {
+          resolve(data);
+        }
+      });
+    });
+  }
 }

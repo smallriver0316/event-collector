@@ -13,4 +13,4 @@ aws rds-data execute-statement --resource-arn $DB_ARN --secret-arn $SECRET_ARN \
 --sql "create database event_collector_db"
 
 aws rds-data execute-statement --resource-arn $DB_ARN --secret-arn $SECRET_ARN --database "event_collector_db" \
---sql 'create table if not exists "event_table" (id varchar(20) PRIMARY KEY, origin varchar(10), event_id varchar(10), title varchar(20), description text, event_url text, start_time varchar(20), end_time varchar(20), ticket_limit int, accepted int, waiting int, updated_at varchar(20), place varchar(64), address varchar(64), lat double precision, lon double precision)'
+--sql 'create table if not exists "event_table" (id varchar(40) PRIMARY KEY, origin varchar(20), event_id varchar(20), title text DEFAULT null, description text DEFAULT null, event_url text DEFAULT null, start_time varchar(40) DEFAULT null, end_time varchar(40) DEFAULT null, ticket_limit int DEFAULT null, accepted int DEFAULT null, waiting int DEFAULT null, updated_at varchar(40) DEFAULT null, place text DEFAULT null, address text DEFAULT null, lat double precision DEFAULT null, lon double precision DEFAULT null)'
