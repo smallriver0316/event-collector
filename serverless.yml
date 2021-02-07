@@ -122,11 +122,13 @@ functions:
   eventPusher:
     handler: src/lambda/event-pusher/handler.eventPusher
     role: EventPusherLambdaRole
+    maximumEventAge: 600
     description: "function to push event data to RDS triggered by Kinesis Data Streams"
     events:
       - stream:
           arn: arn:aws:kinesis:#{AWS::Region}:#{AWS::AccountId}:stream/${self:custom.kinesisName}
           batchSize: 100
+          maximumRetryAttempts: 2
           startingPosition: LATEST
           enabled: true
     environment:
