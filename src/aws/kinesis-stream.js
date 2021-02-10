@@ -20,6 +20,7 @@ module.exports = class KinesisStream {
           console.error('[ERROR] Failed to kinesis.putRecord');
           reject(err);
         } else {
+          console.log('Succeeded to kinesis.putRecord');
           resolve(data);
         }
       });
@@ -51,6 +52,7 @@ module.exports = class KinesisStream {
           console.error('[ERROR] Failed to kinesis.putRecords');
           reject(err);
         } else {
+          console.log('Succeeded to kinesis.putRecords');
           resolve(data);
         }
       })

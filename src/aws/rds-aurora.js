@@ -20,6 +20,7 @@ module.exports = class RdsDataService {
           console.error('[ERROR] Failed to RdsDataService.beginTransaction');
           reject(err);
         } else {
+          console.log('Succeeded to RdsDataService.beginTransaction');
           resolve(data);
         }
       });
@@ -41,6 +42,7 @@ module.exports = class RdsDataService {
           console.error('[ERROR] Failed to RdsDataService.commitTransaction');
           reject(err);
         } else {
+          console.log('Succeeded to RdsDataService.commitTransaction');
           resolve(data);
         }
       });
@@ -63,6 +65,7 @@ module.exports = class RdsDataService {
           console.error('[ERROR] Failed to RdsDataService.executeSelectAll');
           reject(err);
         } else {
+          console.log('Succeeded to RdsDataService.executeSelectAll');
           resolve(data);
         }
       });
@@ -92,6 +95,7 @@ module.exports = class RdsDataService {
           console.error('[ERROR] Failed to RdsDataService.insertEvents');
           reject(err);
         } else {
+          console.log('Succeeded to RdsDataService.insertEvents');
           resolve(data);
         }
       });

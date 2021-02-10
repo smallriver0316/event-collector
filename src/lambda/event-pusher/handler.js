@@ -7,7 +7,8 @@ var sts = new AWS.STS();
 const SecretsManager = require('../../aws/secrets-manager');
 const RdsDataService = require('../../aws/rds-aurora');
 
-const INSERT_SQL_STRING = `insert into ${process.env.TABLE_NAME} VALUES(:id, :origin, :event_id, :title, :description, :event_url, :start_time, :end_time, :ticket_limit, :accepted, :waiting, :updated_at, :place, :address, :lat, :lon)`;
+const INSERT_STRING = `insert into ${process.env.TABLE_NAME} VALUES (:id, :origin, :event_id, :title, :description, :event_url, :start_time, :end_time, :ticket_limit, :accepted, :waiting, :updated_at, :place, :address, :lat, :lon)`;
+const CONFLICT_STRING = ' on conflict (id) do update set title = EXCLUDED.title, description = EXCLUDED.description, start_time = EXCLUDED.start_time, end_time = EXCLUDED.end_time, ticket_limit = EXCLUDED.ticket_limit, accepted = EXCLUDED.accepted, waiting = EXCLUDED.waiting, updated_at = EXCLUDED.updated_at, place = EXCLUDED.place, address = EXCLUDED.address, lat = EXCLUDED.lat, lon = EXCLUDED.lon';
 
 module.exports.eventPusher = async (event, context, callback) => {
   console.log(JSON.stringify(event));
@@ -102,7 +103,7 @@ module.exports.eventPusher = async (event, context, callback) => {
     const res = await rdsDataService.insertEvents(
       resourceArn,
       secret.ARN,
-      INSERT_SQL_STRING,
+      INSERT_STRING + CONFLICT_STRING,
       parameterSets,
       transaction.transactionId
     );
