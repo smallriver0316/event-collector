@@ -72,6 +72,7 @@ functions:
     handler: src/lambda/compass-collector/handler.compassCollector
     role: CompassCollectorLambdaRole
     description: "function to collect event data with Compass API"
+    timeout: 900
     environment:
       KINESIS_STREAM_NAME: ${self:custom.kinesisName}
 #    The following are a few example events you can configure
@@ -115,15 +116,19 @@ functions:
 #      variable2: value2
   doorkeeperCollector:
     handler: src/lambda/doorkeeper-collector/handler.doorkeeperCollector
+    role: DoorkeeperCollectorLambdaRole
     description: "function to collect event data with Doorkeeper API"
+    timeout: 900
     environment:
       DOORKEEPER_API_TOKEN: ""
+      KINESIS_STREAM_NAME: ${self:custom.kinesisName}
 
   eventPusher:
     handler: src/lambda/event-pusher/handler.eventPusher
     role: EventPusherLambdaRole
     maximumEventAge: 600
     description: "function to push event data to RDS triggered by Kinesis Data Streams"
+    timeout: 900
     events:
       - stream:
           arn: arn:aws:kinesis:#{AWS::Region}:#{AWS::AccountId}:stream/${self:custom.kinesisName}
