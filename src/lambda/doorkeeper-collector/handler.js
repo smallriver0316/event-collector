@@ -7,6 +7,7 @@ var KinesisStream = require('../../aws/kinesis-stream');
 const callExternalEventApi = require('../request-event');
 
 const MAX_EVENTS_NUM = 2000;
+const EVENTS_NUM_PER_PAGE = 25;
 
 module.exports.doorkeeperCollector = async (event, context, callback) => {
   console.log('Start doorkeeperCollector handler');
@@ -25,10 +26,10 @@ module.exports.doorkeeperCollector = async (event, context, callback) => {
   }
 };
 
-async function requestDoorkeeperData(startDate, endDate, startIndex) {
-  console.log(`Start request to Doorkeeper since ${startDate}, until ${endDate}, page from ${startIndex}`);
+async function requestDoorkeeperData(startDate, endDate, page) {
+  console.log(`Start request to Doorkeeper since ${startDate}, until ${endDate}, page ${page}`);
 
-  const url = `https://api.doorkeeper.jp/events/?since=${startDate}&until=${endDate}&page=${startIndex}`;
+  const url = `https://api.doorkeeper.jp/events/?since=${startDate}&until=${endDate}&page=${page}`;
   const options = {
     headers: {
       'User-Agent': 'Node/12.x',
@@ -39,7 +40,7 @@ async function requestDoorkeeperData(startDate, endDate, startIndex) {
   const doorkeeperRes = await callExternalEventApi(url, options);
   const doorkeeperData = JSON.parse(doorkeeperRes);
   const requestedEvents = Array.isArray(doorkeeperData) ? doorkeeperData.length : 0;
-  const remainedEvents = MAX_EVENTS_NUM - (startIndex + requestedEvents - 1);
+  const remainedEvents = MAX_EVENTS_NUM - (page - 1) * EVENTS_NUM_PER_PAGE - requestedEvents;
 
   console.log(`Fetched events: ${requestedEvents}, Remained events: ${remainedEvents}`);
   if (requestedEvents === 0) {
@@ -73,7 +74,7 @@ async function requestDoorkeeperData(startDate, endDate, startIndex) {
   const kinesisStream = new KinesisStream(kinesisClient);
   const res = await kinesisStream.putRecords(events);
   if (remainedEvents > 0) {
-    return requestDoorkeeperData(startDate, endDate, startIndex + requestedEvents);
+    return requestDoorkeeperData(startDate, endDate, page + 1);
   } else {
     return res;
   }
