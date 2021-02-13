@@ -2,6 +2,8 @@
 const https = require('https');
 
 const callExternalEventApi = async (url, options) => {
+  console.log('Start call external API');
+
   let body = '';
   return new Promise((resolve, reject) => {
     https.get(url, options, res => {
