@@ -20,3 +20,16 @@ npx serverless deploy -v
 ```bash
 npx serverless remove
 ```
+
+## How to work
+
+These functions collect events of specified month as following.
+
+```json
+{
+    params: {
+        year: 2021,
+        month: 4
+    }
+}
+```
