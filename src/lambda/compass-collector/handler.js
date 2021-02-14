@@ -10,7 +10,17 @@ const MAX_EVENTS_NUM = 2000;
 
 module.exports.compassCollector = async (event, context, callback) => {
   console.log('Start compassCollector handler');
-  const currentMonth = moment().format('YYYYMM');
+
+  if (!event.params || !event.params.year || !event.params.month) {
+    callback(new Error('Target year and month undefined!'));
+  }
+
+  const year = String(event.params.year);
+  const month = ('0' + event.params.month).slice(-2);
+  const yyyymm = year + month;
+  console.log(`Target year and month is ${yyyymm}`);
+
+  const currentMonth = moment(yyyymm, 'YYYYMM').format('YYYYMM');
 
   try {
     const res = await requestCompassData(currentMonth, 1);

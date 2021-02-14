@@ -12,8 +12,17 @@ const EVENTS_NUM_PER_PAGE = 25;
 module.exports.doorkeeperCollector = async (event, context, callback) => {
   console.log('Start doorkeeperCollector handler');
 
-  const startOfMonth = moment().startOf('month').format('YYYYMMDD');
-  const endOfMonth = moment().endOf('month').format('YYYYMMDD');
+  if (!event.params || !event.params.year || !event.params.month) {
+    callback(new Error('Target year and month undefined!'));
+  }
+
+  const year = String(event.params.year);
+  const month = ('0' + event.params.month).slice(-2);
+  const yyyymm = year + month;
+  console.log(`Target year and month is ${yyyymm}`);
+
+  const startOfMonth = moment(yyyymm, 'YYYYMM').startOf('month').format('YYYYMMDD');
+  const endOfMonth = moment(yyyymm, 'YYYYMM').endOf('month').format('YYYYMMDD');
 
   try {
     const res = await requestDoorkeeperData(startOfMonth, endOfMonth, 1);
