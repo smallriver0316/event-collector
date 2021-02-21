@@ -23,7 +23,7 @@ npx serverless remove
 
 ## How to work
 
-These functions collect events of specified month as following.
+These functions collect events of specified month in event as following.
 
 ```json
 {
@@ -33,3 +33,5 @@ These functions collect events of specified month as following.
     }
 }
 ```
+
+Collected events are going to be pushed to database.
