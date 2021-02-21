@@ -75,6 +75,15 @@ functions:
     timeout: 900
     environment:
       KINESIS_STREAM_NAME: ${self:custom.kinesisName}
+    events:
+      - http:
+          path: evtcollect/api/v1/compass
+          method: post
+          authorizer:
+            type: aws_iam
+          request:
+            schema:
+              application/json: ${file(./template/collect_request.json)}
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
@@ -122,6 +131,15 @@ functions:
     environment:
       DOORKEEPER_API_TOKEN: ""
       KINESIS_STREAM_NAME: ${self:custom.kinesisName}
+    events:
+      - http:
+          path: evtcollect/api/v1/doorkeeper
+          method: post
+          authorizer:
+            type: aws_iam
+          request:
+            schema:
+              application/json: ${file(./template/collect_request.json)}
 
   eventPusher:
     handler: src/lambda/event-pusher/handler.eventPusher
