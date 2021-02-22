@@ -5,7 +5,6 @@ Resources:
     Type: "AWS::Kinesis::Stream"
     Properties:
       Name: "EventCollectorKinesisStream"
-      RetentionPeriodHours: 1
       ShardCount: 1
       StreamEncryption:
         EncryptionType: "KMS"

@@ -1,7 +1,8 @@
 # event-collector
 
 Database and functions to collect events' information
-(Now it's under development...)
+
+!You need to get a API Key of Doorkeeper and set it serverless.yml, if you want to collect its events.
 
 ## How to setup
 
