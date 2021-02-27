@@ -12,12 +12,21 @@ const EVENTS_NUM_PER_PAGE = 25;
 module.exports.doorkeeperCollector = async (event, context, callback) => {
   console.log('Start doorkeeperCollector handler');
 
-  if (!event.params || !event.params.year || !event.params.month) {
+  let params = {}; // { year, month }
+  if (event.body) {
+    // in the case of requested via API Gateway
+    params = JSON.parse(event.body);
+  } else {
+    params = event;
+  }
+
+  if (!params.year || !params.month) {
+    console.error(JSON.stringify(event));
     callback(new Error('Target year and month undefined!'));
   }
 
-  const year = String(event.params.year);
-  const month = ('0' + event.params.month).slice(-2);
+  const year = String(params.year);
+  const month = ('0' + params.month).slice(-2);
   const yyyymm = year + month;
   console.log(`Target year and month is ${yyyymm}`);
 

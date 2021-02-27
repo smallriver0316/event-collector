@@ -79,8 +79,6 @@ functions:
       - http:
           path: api/v1/compass
           method: post
-          authorizer:
-            type: aws_iam
           request:
             schema:
               application/json: ${file(./templates/collect_request.json)}
@@ -135,8 +133,6 @@ functions:
       - http:
           path: api/v1/doorkeeper
           method: post
-          authorizer:
-            type: aws_iam
           request:
             schema:
               application/json: ${file(./templates/collect_request.json)}
